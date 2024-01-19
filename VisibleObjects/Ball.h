@@ -29,7 +29,7 @@ public:
         this->rightPaddle = rightPaddle;
         this->x = screen->x / 2;
         this->y = screen->y / 2;
-        vec2d = new Vec2d(4);
+        vec2d = new Vec2d(6);
     }
 
     void resetPosition() {
@@ -37,7 +37,7 @@ public:
         this->y = screen->y / 2;
 
         delete vec2d;
-        vec2d = new Vec2d(4);
+        vec2d = new Vec2d(6);
     }
 
     void draw(SDL_Renderer *renderer) const {

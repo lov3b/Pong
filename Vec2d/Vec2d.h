@@ -18,16 +18,16 @@ inline double_t toRadians(double_t degrees) {
 class Vec2d {
 private:
     std::default_random_engine random;
-    const float_t hypotenuse;
+    float_t hypotenuse;
     double_t x, y;
+    const float_t bumpSpeedIncrease = 1.05;
 
 public:
     Vec2d(float_t hypotenuse) : hypotenuse(hypotenuse) {
         std::random_device rd;
         random = std::default_random_engine(rd());
         int sign = random() % 2 == 0 ? -1 : 1;
-        //double_t angle = toRadians(random() % 6000 / 100 - 30);
-        double_t angle = 15;
+        double_t angle = toRadians(random() % 6000 / 100 - 30);
         x = cos(angle) * sign * hypotenuse;
         y = sin(angle) * sign * hypotenuse;
     }
@@ -38,6 +38,11 @@ public:
     }
 
     void bump(BumpType bumpType, PaddleDirection paddleDirection) {
+        // Make everything a bit faster so it's not boring
+        hypotenuse *= bumpSpeedIncrease;
+        x *= bumpSpeedIncrease;
+        y *= bumpSpeedIncrease;
+
         switch (bumpType) {
             case BumpType::BOTH:
                 x = -x;
@@ -58,6 +63,7 @@ public:
                     y = sin(angle) * hypotenuse;
                 }
         }
+
     }
 
 };
