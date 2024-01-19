@@ -3,6 +3,9 @@ project(Pong)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Option for enabling optimizations
+option(ENABLE_OPTIMIZATIONS "Enable compiler optimizations" OFF)
+
 # Base SDL2
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -33,3 +36,13 @@ add_executable(Pong src/main.cpp
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})
+
+# Set compiler optimization flags
+if(ENABLE_OPTIMIZATIONS)
+    message(STATUS "Optimizations are enabled")
+    if(MSVC)
+        target_compile_options(Pong PRIVATE /O2)
+    else()
+        target_compile_options(Pong PRIVATE -O3)
+    endif()
+endif()
