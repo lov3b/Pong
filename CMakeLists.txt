@@ -25,7 +25,6 @@ add_executable(Pong main.cpp
         SdlWrapper.h
         Game.h
         VisibleObjects/Ball.h
-        utils.h
         Vec2d/Vec2d.h
         Vec2d/Bump.h
         VisibleObjects/PlayerPaddle.h

@@ -3,7 +3,6 @@
 //
 #pragma once
 
-#include "../utils.h"
 #include "../Vec2d/Vec2d.h"
 #include "PlayerPaddle.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
