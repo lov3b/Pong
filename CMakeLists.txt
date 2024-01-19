@@ -21,15 +21,15 @@ endif ()
 
 
 # Define the executable target before linking libraries
-add_executable(Pong main.cpp
-        SdlWrapper.h
-        Game.h
-        VisibleObjects/Ball.h
-        Vec2d/Vec2d.h
-        Vec2d/Bump.h
-        VisibleObjects/PlayerPaddle.h
-        VisibleObjects/Side.h
-        VisibleObjects/Score.h)
+add_executable(Pong src/main.cpp
+        src/SdlWrapper.h
+        src/Game.h
+        src/VisibleObjects/Ball.h
+        src/Vec2d/Vec2d.h
+        src/Vec2d/Bump.h
+        src/VisibleObjects/PlayerPaddle.h
+        src/VisibleObjects/Side.h
+        src/VisibleObjects/Score.h)
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})
