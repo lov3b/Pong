@@ -13,6 +13,13 @@ if (NOT SDL2_GFX_LIBRARY)
     message(FATAL_ERROR "SDL2_gfx not found")
 endif ()
 
+find_library(SDL2_TTF_LIBRARY NAMES SDL2_ttf SDL2_TTF SDL2TTF)
+if (NOT SDL2_TTF_LIBRARY)
+    message(FATAL_ERROR "SDL2_TTF not found")
+endif ()
+
+
+
 # Define the executable target before linking libraries
 add_executable(Pong main.cpp
         SdlWrapper.h
@@ -22,7 +29,8 @@ add_executable(Pong main.cpp
         Vec2d/Vec2d.h
         Vec2d/Bump.h
         VisibleObjects/PlayerPaddle.h
-        VisibleObjects/Side.h)
+        VisibleObjects/Side.h
+        VisibleObjects/Score.h)
 
 # Now link the libraries to the target
-target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY})
+target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})

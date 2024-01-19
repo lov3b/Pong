@@ -8,25 +8,34 @@
 #include "SDL.h"
 #include "VisibleObjects/Ball.h"
 #include "VisibleObjects/PlayerPaddle.h"
+#include "VisibleObjects/Score.h"
 
 
 class Game : public SdlWrapper {
 private:
     Ball *ball;
-
+    Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
 
 public:
     explicit Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60) {
         leftPaddle = new PlayerPaddle(&this->screenSize, Side::LEFT);
         rightPaddle = new PlayerPaddle(&this->screenSize, Side::RIGHT);
-        ball = new Ball(&this->screenSize, leftPaddle, rightPaddle);
+
+        auto func = [this](Side side) {
+            const char *player = side == Side::LEFT ? "one" : "two";
+            std::cout << "Player " << player << " won" << std::endl;
+            this->running = false;
+        };
+        score = new Score(5, &this->screenSize, func);
+        ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
     }
 
     ~Game() override {
         delete ball;
         delete leftPaddle;
         delete rightPaddle;
+        delete score;
     }
 
     void draw(SDL_Renderer *renderer) override {
@@ -35,6 +44,7 @@ public:
         SDL_RenderClear(renderer);
 
         ball->draw(renderer);
+        score->draw(renderer);
         leftPaddle->draw(renderer);
         rightPaddle->draw(renderer);
         SDL_RenderPresent(renderer);
@@ -44,6 +54,7 @@ public:
         ball->update();
         leftPaddle->update();
         rightPaddle->update();
+        score->update();
 
         return true;
     }

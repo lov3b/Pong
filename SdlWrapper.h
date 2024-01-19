@@ -5,6 +5,8 @@
 #pragma
 
 #include <string>
+#include <SDL_ttf.h>
+#include <iostream>
 #include "SDL.h"
 
 class SdlWrapper {
@@ -14,12 +16,20 @@ private:
     SDL_Renderer *renderer;
 protected:
     SDL_Point screenSize;
+    bool running = true;
 
 public:
     explicit SdlWrapper(const char *title, const SDL_Point screenSize, const uint8_t fps) : fps(fps) {
         this->screenSize = screenSize;
 
-        SDL_Init(SDL_INIT_VIDEO);
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+            std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
+            exit(-1);
+        }
+        if (TTF_Init() < 0) {
+            std::cerr << "Failed to initialize TTF: " << TTF_GetError() << std::endl;
+            exit(-1);
+        }
         window = SDL_CreateWindow(
                 title,
                 SDL_WINDOWPOS_UNDEFINED,
@@ -48,7 +58,7 @@ public:
     virtual bool handleEvents() = 0;
 
     int loop() {
-        while (true) {
+        while (running) {
             if (!handleEvents() || !update())
                 break;
             draw(renderer);

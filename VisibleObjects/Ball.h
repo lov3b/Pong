@@ -9,6 +9,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <iostream>
 #include "optional"
+#include "Score.h"
 
 class Ball {
 private:
@@ -18,15 +19,26 @@ private:
     Vec2d *vec2d;
     static const uint32_t color = 0xCD5C5CFF;
     const PlayerPaddle *leftPaddle, *rightPaddle;
+    Score *score;
 
 public:
-    explicit Ball(const SDL_Point *screen, const PlayerPaddle *leftPaddle, const PlayerPaddle *rightPaddle) {
+    explicit Ball(const SDL_Point *screen, const PlayerPaddle *leftPaddle, const PlayerPaddle *rightPaddle,
+                  Score *score) {
+        this->score = score;
         this->screen = screen;
-        this->x = screen->x / 2;
-        this->y = screen->y / 2;
-        this->vec2d = new Vec2d(2.5);
         this->leftPaddle = leftPaddle;
         this->rightPaddle = rightPaddle;
+        this->x = screen->x / 2;
+        this->y = screen->y / 2;
+        vec2d = new Vec2d(4);
+    }
+
+    void resetPosition() {
+        this->x = screen->x / 2;
+        this->y = screen->y / 2;
+
+        delete vec2d;
+        vec2d = new Vec2d(4);
     }
 
     void draw(SDL_Renderer *renderer) const {
@@ -34,16 +46,17 @@ public:
     }
 
     void update() {
-        std::cout << "Ball x: " << x << ", y: " << y << std::endl;
         std::optional<Side> paddleSide = collidedPaddle();
         bool screenEdgeVertical = collidedScreenEdgeVertical();
+        std::optional<Side> scoreSide = collidedScreenEdgeHorizontal();
+
         if (screenEdgeVertical && paddleSide.has_value()) {
             vec2d->bump(BumpType::BOTH, PaddleDirection::NONE);
         } else if (screenEdgeVertical) {
             vec2d->bump(BumpType::WALL, PaddleDirection::NONE);
-        } else if (collidedScreenEdgeHorizontal()) {
-            std::cout << "Player won" << std::endl;
-            exit(1);
+        } else if (scoreSide.has_value()) {
+            score->incrementScore(scoreSide.value());
+            resetPosition();
         }
         if (paddleSide.has_value()) {
             const PlayerPaddle *paddle = paddleSide.value() == Side::LEFT ? leftPaddle : rightPaddle;
@@ -57,26 +70,29 @@ private:
         return y - RADIUS <= 0 || y + RADIUS >= screen->y;
     }
 
-    bool collidedScreenEdgeHorizontal() {
-        return x + RADIUS >= screen->x || x - RADIUS <= 0;
+    std::optional<Side> collidedScreenEdgeHorizontal() {
+        if (x + RADIUS >= screen->x)
+            return Side::RIGHT;
+        else if (x - RADIUS <= 0)
+            return Side::LEFT;
+        return std::nullopt;
     }
 
     std::optional<Side> collidedPaddle() {
-        // Check collision with right paddle
+        // Right paddle
         if (x + RADIUS >= rightPaddle->x &&
             y >= rightPaddle->y &&
             y <= rightPaddle->y + rightPaddle->h) {
             return Side::RIGHT;
         }
-            // Check collision with left paddle
-        else if (x - RADIUS <= leftPaddle->x + leftPaddle->w &&
-                 y >= leftPaddle->y &&
-                 y <= leftPaddle->y + leftPaddle->h) {
+        // Left paddle
+        if (x - RADIUS <= leftPaddle->x + leftPaddle->w &&
+            y >= leftPaddle->y &&
+            y <= leftPaddle->y + leftPaddle->h) {
             return Side::LEFT;
         }
         return std::nullopt;
     }
-
 
 };
 
