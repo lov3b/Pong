@@ -17,7 +17,8 @@ inline double_t toRadians(double_t degrees) {
 
 class Vec2d {
 private:
-    std::default_random_engine random;
+    std::mt19937 mtRand;
+    std::uniform_real_distribution<double_t> smallAngleGen;
     float_t hypotenuse;
     double_t x, y;
     const float_t bumpSpeedIncrease = 1.05;
@@ -25,11 +26,16 @@ private:
 public:
     Vec2d(float_t hypotenuse) : hypotenuse(hypotenuse) {
         std::random_device rd;
-        random = std::default_random_engine(rd());
-        int sign = random() % 2 == 0 ? -1 : 1;
-        double_t angle = toRadians(random() % 6000 / 100 - 30);
+        mtRand = std::mt19937(rd());
+        std::uniform_int_distribution<uint8_t> ints(0, 1);
+        int sign = ints(mtRand) ? -1 : 1;
+
+        std::uniform_real_distribution<float_t> angleGen(3, 60);
+        double_t angle = toRadians(angleGen(mtRand));
         x = cos(angle) * sign * hypotenuse;
         y = sin(angle) * sign * hypotenuse;
+
+        smallAngleGen = std::uniform_real_distribution<double_t>(15, 20);
     }
 
     void applyVector(Sint16 *ox, Sint16 *oy) const {
@@ -55,7 +61,7 @@ public:
                 x = -x;
                 double angle = 0;
                 if (paddleDirection != PaddleDirection::NOT_MOVING) {
-                    double_t degrees = rand() % 500 / 100 + 15;
+                    double_t degrees = smallAngleGen(mtRand);
                     degrees *= paddleDirection == PaddleDirection::MOVING_UP ? -1 : 1;
                     angle = toRadians(degrees);
 
