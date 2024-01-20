@@ -31,7 +31,7 @@ public:
         color[3] = 255;
     }
 
-    PaddleDirection getPaddleDirection() const {
+    [[nodiscard]] PaddleDirection getPaddleDirection() const {
         if (movingUp != movingDown)
             return PaddleDirection::NOT_MOVING;
         else if (movingUp)

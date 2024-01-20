@@ -16,13 +16,13 @@
 #include <iostream>
 
 #if defined(_WIN32) || defined(_WIN64)
-// Windows
-    const char* defaultFontPath = "C:\\Windows\\Fonts\\Arial.ttf";
+const char* defaultFontPath = "C:\\Windows\\Fonts\\Arial.ttf";
 #elif defined(__linux__)
 const char *defaultFontPath = "/usr/share/fonts/truetype/DejaVuSans-Bold.ttf";
+#elif defined(__APPLE__) || defined(__MACH__)
+const char *defaultFontPath = "/System/Library/Fonts/Supplemental/Arial.ttf";
 #else
-// Other platforms
-    const char* defaultFontPath = "path/to/a/default/font.ttf";
+const char* defaultFontPath = nullptr;
 #endif
 
 
@@ -30,7 +30,7 @@ class Score {
 private:
     uint8_t leftScore, rightScore;
     const uint8_t MAX_SCORE;
-    std::function<void(Side)> &whenWon;
+    const std::function<void(Side)> whenWon;
     TTF_Font *font;
     bool hasIncremented = false;
 
@@ -40,14 +40,19 @@ private:
     SDL_Surface *surface = nullptr;
 
     // Shadow
-    const SDL_Color shadowColor = {243, 156, 18, 100}; // Black color for the shadow
+    const SDL_Color shadowColor = {243, 156, 18, 100};
     SDL_Surface *shadowSurface = nullptr;
     const int shadowOffset = 3;
 
 public:
-    explicit Score(uint8_t max_score, SDL_Point *screenSize, std::function<void(Side)> whenWon) : MAX_SCORE(max_score),
-                                                                                                  whenWon(whenWon) {
+    explicit Score(uint8_t max_score, SDL_Point *screenSize, const std::function<void(Side)> whenWon) : MAX_SCORE(
+            max_score), whenWon(whenWon) {
         resetScore();
+        if (defaultFontPath == nullptr) {
+            std::cerr << "Font path is not set for this platform (null)" << std::endl;
+            exit(-1);
+        }
+
         this->font = TTF_OpenFont(defaultFontPath, 42);
         if (font == nullptr) {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
@@ -55,6 +60,7 @@ public:
         }
 
         this->position = SDL_Rect{screenSize->x / 2 - 50, 10, 100, 40};
+        this->rightScore = this->leftScore = 0;
     }
 
     ~Score() {
@@ -96,7 +102,7 @@ public:
             if (shadowTexture != nullptr) {
                 SDL_Rect shadowPosition = {position.x + shadowOffset, position.y + shadowOffset, position.w,
                                            position.h};
-                SDL_RenderCopy(renderer, shadowTexture, NULL, &shadowPosition);
+                SDL_RenderCopy(renderer, shadowTexture, nullptr, &shadowPosition);
                 SDL_DestroyTexture(shadowTexture);
             }
         }
@@ -105,7 +111,7 @@ public:
         if (surface != nullptr) {
             SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
             if (texture != nullptr) {
-                SDL_RenderCopy(renderer, texture, NULL, &position);
+                SDL_RenderCopy(renderer, texture, nullptr, &position);
                 SDL_DestroyTexture(texture);
             }
         }
