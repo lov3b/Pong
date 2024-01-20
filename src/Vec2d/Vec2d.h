@@ -33,8 +33,8 @@ public:
     }
 
     void applyVector(Sint16 *ox, Sint16 *oy) const {
-        *ox += static_cast<int>(std::round(x));
-        *oy += static_cast<int>(std::round(y));
+        *ox += std::round(x);
+        *oy += std::round(y);
     }
 
     void bump(BumpType bumpType, PaddleDirection paddleDirection) {
