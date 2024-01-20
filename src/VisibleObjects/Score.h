@@ -59,7 +59,7 @@ public:
             exit(-1);
         }
 
-        this->position = SDL_Rect{screenSize->x / 2 - 50, 10, 100, 40};
+        this->position = SDL_Rect{screenSize->x / 2 - 50, 10, 100, 50};
         this->rightScore = this->leftScore = 0;
     }
 
