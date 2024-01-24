@@ -54,7 +54,8 @@ public:
         } else if (screenEdgeVertical) {
             vec2d->bump(BumpType::WALL, PaddleDirection::NONE);
         } else if (scoreSide.has_value()) {
-            score->incrementScore(scoreSide.value());
+            // Invert side
+            score->incrementScore(scoreSide.value() == Side::LEFT ? Side::RIGHT : Side::LEFT);
             resetPosition();
         }
         if (paddleSide.has_value()) {
