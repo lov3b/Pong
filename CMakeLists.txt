@@ -33,6 +33,7 @@ add_executable(Pong src/main.cpp
         src/VisibleObjects/PlayerPaddle.h
         src/VisibleObjects/Side.h
         src/VisibleObjects/Score.h
+        src/TextScreen.h
         src/defaultfont.h)
 
 # Now link the libraries to the target
