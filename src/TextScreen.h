@@ -6,23 +6,27 @@
 
 #include <SDL_render.h>
 #include <SDL_ttf.h>
+#include <utility>
+#include <vector>
 #include "defaultfont.h"
 #include "iostream"
 
+
 class TextScreen {
 private:
-    std::string *text;
+    std::vector<std::string> lines;
     TTF_Font *font;
     bool hasUpdated;
 
     // Regular
-    SDL_Rect position;
+    std::vector<SDL_Rect> positions;
     SDL_Color color = {243, 156, 18, 255};
-    SDL_Surface *surface = nullptr;
+    std::vector<SDL_Surface *> surfaces;
 
     // Shadow
+    std::vector<SDL_Rect> shadowPositions;
     const SDL_Color shadowColor = {243, 156, 18, 100};
-    SDL_Surface *shadowSurface = nullptr;
+    std::vector<SDL_Surface *> shadowSurfaces;
     const int shadowOffset = 3;
 
 public:
@@ -31,7 +35,7 @@ public:
      * @param text This class takes care of freeing text
      * @param screenSize This won't be freed by this class
      */
-    TextScreen(std::string *text, SDL_Point *screenSize) : text(text), hasUpdated(false) {
+    TextScreen(const std::string& text, SDL_Point *screenSize) : hasUpdated(false) {
         if (defaultFontPath == nullptr) {
             std::cerr << "Font path is not set for this platform (null)" << std::endl;
             exit(-1);
@@ -41,74 +45,122 @@ public:
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(-1);
         }
-        this->position = SDL_Rect{50, 50, screenSize->x - 50, screenSize->y - 50};
+
+        lines = splitString(text, '\n');
+        surfaces.reserve(lines.size());
+        shadowSurfaces.reserve(lines.size());
+        positions.reserve(lines.size());
+        shadowPositions.reserve(lines.size());
+
+        for (int i = 0; i < lines.size(); ++i) {
+            int textWidth, textHeight;
+            TTF_SizeText(font, lines[i].c_str(), &textWidth, &textHeight);
+
+            int baseX = (screenSize->x - textWidth) / 2, baseY = (screenSize->y - textHeight * (lines.size())) / 2;
+            SDL_Rect regularPosition = {baseX,
+                                        baseY + textHeight * i,
+                                        textWidth, textHeight};
+            SDL_Rect shadowPosition = {baseX + shadowOffset,
+                                       baseY + textHeight * i + shadowOffset,
+                                       textWidth,
+                                       textHeight};
+            positions.push_back(regularPosition);
+            shadowPositions.push_back(shadowPosition);
+        }
+
     }
 
     ~TextScreen() {
         if (font)
             TTF_CloseFont(font);
-        SDL_FreeSurface(surface);
-        delete text;
+        for (auto *surface: surfaces)
+            SDL_FreeSurface(surface);
+        for (auto *surface: shadowSurfaces)
+            SDL_FreeSurface(surface);
     }
 
 
     void draw(SDL_Renderer *renderer) {
-        // Draw shadow
-        if (shadowSurface != nullptr) {
-            SDL_Texture *shadowTexture = SDL_CreateTextureFromSurface(renderer, shadowSurface);
+        for (int i = 0; i < surfaces.size(); ++i) {
+            // Draw shadow
+            SDL_Texture *shadowTexture = SDL_CreateTextureFromSurface(renderer, shadowSurfaces[i]);
             if (shadowTexture != nullptr) {
-                SDL_Rect shadowPosition = {position.x + shadowOffset, position.y + shadowOffset, position.w,
-                                           position.h};
-                SDL_RenderCopy(renderer, shadowTexture, nullptr, &shadowPosition);
+                SDL_RenderCopy(renderer, shadowTexture, nullptr, &shadowPositions[i]);
                 SDL_DestroyTexture(shadowTexture);
             }
-        }
 
-        // Draw text
-        if (surface != nullptr) {
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+            // Draw text
+            SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surfaces[i]);
             if (texture != nullptr) {
-                SDL_RenderCopy(renderer, texture, nullptr, &position);
+                SDL_RenderCopy(renderer, texture, nullptr, &positions[i]);
                 SDL_DestroyTexture(texture);
             }
         }
     }
 
-    void setText(std::string *replaceText) {
-        delete this->text;
-        this->text = replaceText;
+    void setText(std::string &replaceText) {
+        lines = splitString(replaceText, '\n');
     }
 
-    void replaceCharAtIndex(char c, int index) {
-        if (text->length() <= index) {
-            std::cerr << "text string is at length " << text->length() << ", but index is " << index << std::endl;
+    void replaceCharAtIndex(char c, int line, int index) {
+        if (lines.size() <= line) {
+            if (lines[line].length() <= index) {
+                std::cerr << "string lines is of length " << lines.size() << ", but line index is " << index
+                          << std::endl;
+                return;
+            }
+        }
+        if (lines[line].length() <= index) {
+            std::cerr << "text string is of length " << lines[line].length() << ", but index is " << index << std::endl;
             return;
         }
         hasUpdated = false;
-        text[index] = c;
+        lines[line][index] = c;
     }
 
     void update() {
-        if (!hasUpdated)
+        if (hasUpdated)
             return;
 
-        SDL_FreeSurface(surface);
-        SDL_FreeSurface(shadowSurface);
+        for (auto &surface: surfaces)
+            SDL_FreeSurface(surface);
+        for (auto &shadowSurface: shadowSurfaces)
+            SDL_FreeSurface(shadowSurface);
+        surfaces.clear();
+        shadowSurfaces.clear();
 
-        shadowSurface = TTF_RenderText_Solid(font, text->c_str(), shadowColor);
-        if (shadowSurface == nullptr)
-            std::cerr << "Failed to create shadow text surface (TextScreen): " << TTF_GetError() << std::endl;
+        for (const auto &line: lines) {
+            SDL_Surface *textSurface = TTF_RenderText_Solid(font, line.c_str(), color);
+            SDL_Surface *shadowSurface = TTF_RenderText_Solid(font, line.c_str(), shadowColor);
 
-        surface = TTF_RenderText_Solid(font, text->c_str(), color);
-        if (surface == nullptr)
-            std::cerr << "Failed to create text surface (TextScreen): " << TTF_GetError() << std::endl;
+            if (textSurface == nullptr || shadowSurface == nullptr) {
+                std::cerr << "Failed to create text surface (TextScreen): " << TTF_GetError() << std::endl;
+                continue;
+            }
+
+            surfaces.push_back(textSurface);
+            shadowSurfaces.push_back(shadowSurface);
+
+        }
 
         hasUpdated = true;
-
     }
 
-    bool gameContextFinished() {
+private:
+    static std::vector<std::string> splitString(const std::string &string, const char delim) {
+        int size = 0;
+        for (char c: string)
+            if (c == delim) size++;
 
+        std::vector<std::string> lines;
+        lines.reserve(size);
+
+        std::stringstream ss(string);
+        std::string line;
+        while (std::getline(ss, line, delim))
+            lines.push_back(line);
+
+
+        return lines;
     }
-
 };

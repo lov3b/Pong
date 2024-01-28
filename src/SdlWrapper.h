@@ -53,14 +53,15 @@ public:
 
     virtual void draw(SDL_Renderer *renderer) = 0;
 
-    virtual bool update() = 0;
+    virtual void update() = 0;
 
     virtual bool handleEvents() = 0;
 
     int loop() {
         while (running) {
-            if (!handleEvents() || !update())
+            if (!handleEvents())
                 break;
+            update();
             draw(renderer);
             SDL_Delay(1000 / fps);
         }

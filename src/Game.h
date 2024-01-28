@@ -9,6 +9,7 @@
 #include "VisibleObjects/Ball.h"
 #include "VisibleObjects/PlayerPaddle.h"
 #include "VisibleObjects/Score.h"
+#include "TextScreen.h"
 
 enum class GameState {
     START_SCREEN, GAME, END_SCREEN
@@ -19,6 +20,7 @@ private:
     Ball *ball;
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
+    TextScreen *startScreen, *endScreen;
 
 protected:
     GameState gameState;
@@ -35,6 +37,8 @@ public:
         };
         score = new Score(5, &this->screenSize, func);
         ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
+        startScreen = new TextScreen("Welcome to Pong!\nPress any key to get started...", &this->screenSize);
+        endScreen = new TextScreen("", &this->screenSize);
         gameState = GameState::START_SCREEN;
     }
 
@@ -53,6 +57,7 @@ public:
 
         switch (gameState) {
             case GameState::START_SCREEN:
+                startScreen->draw(renderer);
                 break;
             case GameState::GAME:
                 ball->draw(renderer);
@@ -67,9 +72,10 @@ public:
         SDL_RenderPresent(renderer);
     }
 
-    bool update() override {
+    void update() override {
         switch (gameState) {
             case GameState::START_SCREEN:
+                startScreen->update();
                 break;
             case GameState::GAME:
                 ball->update();
@@ -80,52 +86,67 @@ public:
             case GameState::END_SCREEN:
                 break;
         }
-
-        return true;
     }
 
     bool handleEvents() override {
         SDL_Event event;
-        while (SDL_PollEvent(&event) != 0) {
+
+        while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 return false;
 
-            if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_w:
-                        leftPaddle->startMoving(true);
-                        break;
-                    case SDLK_s:
-                        leftPaddle->startMoving(false);
-                        break;
+            switch (gameState) {
+                case GameState::START_SCREEN:
+                    if (event.type == SDL_KEYDOWN)
+                        gameState = GameState::GAME;
+                    return true;
+                case GameState::GAME:
+                    handleGameEvent(event);
+                    return true;
+                case GameState::END_SCREEN:
+                    break;
+            }
 
-                    case SDLK_UP:
-                        rightPaddle->startMoving(true);
-                        break;
-                    case SDLK_DOWN:
-                        rightPaddle->startMoving(false);
-                        break;
-                }
-            } else if (event.type == SDL_KEYUP) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_w:
-                        leftPaddle->stopMoving(true);
-                        break;
-                    case SDLK_s:
-                        leftPaddle->stopMoving(false);
-                        break;
+        }
 
-                    case SDLK_UP:
-                        rightPaddle->stopMoving(true);
-                        break;
-                    case SDLK_DOWN:
-                        rightPaddle->stopMoving(false);
-                        break;
-                }
+        return true;
+    }
+
+    void handleGameEvent(SDL_Event &event) {
+        if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_w:
+                    leftPaddle->startMoving(true);
+                    break;
+                case SDLK_s:
+                    leftPaddle->startMoving(false);
+                    break;
+
+                case SDLK_UP:
+                    rightPaddle->startMoving(true);
+                    break;
+                case SDLK_DOWN:
+                    rightPaddle->startMoving(false);
+                    break;
+            }
+        } else if (event.type == SDL_KEYUP) {
+            switch (event.key.keysym.sym) {
+                case SDLK_w:
+                    leftPaddle->stopMoving(true);
+                    break;
+                case SDLK_s:
+                    leftPaddle->stopMoving(false);
+                    break;
+
+                case SDLK_UP:
+                    rightPaddle->stopMoving(true);
+                    break;
+                case SDLK_DOWN:
+                    rightPaddle->stopMoving(false);
+                    break;
 
             }
 
         }
-        return true;
     }
 };
