@@ -10,12 +10,18 @@
 #include "VisibleObjects/PlayerPaddle.h"
 #include "VisibleObjects/Score.h"
 
+enum class GameState {
+    START_SCREEN, GAME, END_SCREEN
+};
 
 class Game : public SdlWrapper {
 private:
     Ball *ball;
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
+
+protected:
+    GameState gameState;
 
 public:
     explicit Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60) {
@@ -29,6 +35,7 @@ public:
         };
         score = new Score(5, &this->screenSize, func);
         ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
+        gameState = GameState::START_SCREEN;
     }
 
     ~Game() override {
@@ -43,18 +50,36 @@ public:
         SDL_SetRenderDrawColor(renderer, 128, 0, 128, 0);
         SDL_RenderClear(renderer);
 
-        ball->draw(renderer);
-        score->draw(renderer);
-        leftPaddle->draw(renderer);
-        rightPaddle->draw(renderer);
+
+        switch (gameState) {
+            case GameState::START_SCREEN:
+                break;
+            case GameState::GAME:
+                ball->draw(renderer);
+                score->draw(renderer);
+                leftPaddle->draw(renderer);
+                rightPaddle->draw(renderer);
+                break;
+            case GameState::END_SCREEN:
+                break;
+        }
+
         SDL_RenderPresent(renderer);
     }
 
     bool update() override {
-        ball->update();
-        leftPaddle->update();
-        rightPaddle->update();
-        score->update();
+        switch (gameState) {
+            case GameState::START_SCREEN:
+                break;
+            case GameState::GAME:
+                ball->update();
+                leftPaddle->update();
+                rightPaddle->update();
+                score->update();
+                break;
+            case GameState::END_SCREEN:
+                break;
+        }
 
         return true;
     }

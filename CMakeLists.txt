@@ -32,7 +32,8 @@ add_executable(Pong src/main.cpp
         src/Vec2d/Bump.h
         src/VisibleObjects/PlayerPaddle.h
         src/VisibleObjects/Side.h
-        src/VisibleObjects/Score.h)
+        src/VisibleObjects/Score.h
+        src/defaultfont.h)
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})
