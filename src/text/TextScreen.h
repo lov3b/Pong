@@ -12,6 +12,10 @@
 #include "../defaultfont.h"
 #include "iostream"
 
+struct Position {
+    SDL_Rect shadowPosition;
+    SDL_Rect regularPosition;
+};
 
 class TextScreen {
 private:
@@ -22,11 +26,10 @@ private:
     std::optional<SDL_Point> basePosition;
 
     // Regular
-    std::vector<SDL_Rect> positions;
+    std::vector<Position> positions;
     SDL_Color color = {243, 156, 18, 255};
 
     // Shadow
-    std::vector<SDL_Rect> shadowPositions;
     const SDL_Color shadowColor = {243, 156, 18, 100};
     const int shadowOffset = 3;
 
@@ -48,8 +51,17 @@ public:
 
     void setText(const std::string &replaceText);
 
+    void replaceLine(size_t index, std::string line);
+
+    std::string &getLine(size_t index);
+
+    size_t getAmountOfLines();
+
     virtual void update();
 
 private:
     void initPositions(const std::string &text);
+
+    Position calculatePositionOf(int i) const;
+
 };

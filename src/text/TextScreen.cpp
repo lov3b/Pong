@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <utility>
 #include "TextScreen.h"
 #include "optional"
 
@@ -41,34 +42,36 @@ void TextScreen::initPositions(const std::string &text) {
     surfaces.clear();
     shadowSurfaces.clear();
     positions.clear();
-    shadowPositions.clear();
 
     surfaces.reserve(lines.size());
     shadowSurfaces.reserve(lines.size());
     positions.reserve(lines.size());
-    shadowPositions.reserve(lines.size());
 
     for (int i = 0; i < lines.size(); ++i) {
-        int textWidth, textHeight;
-        TTF_SizeText(font, lines[i].c_str(), &textWidth, &textHeight);
-
-        SDL_Point base = basePosition.has_value() ? basePosition.value() : SDL_Point{(screenSize->x - textWidth) / 2,
-                                                                                     static_cast<int>((screenSize->y -
-                                                                                                       textHeight *
-                                                                                                       (lines.size())) /
-                                                                                                      2)};
-
-        SDL_Rect regularPosition = {base.x, base.y + textHeight * i, textWidth, textHeight};
-        SDL_Rect shadowPosition = {base.x + shadowOffset, base.y + textHeight * i + shadowOffset, textWidth,
-                                   textHeight};
-        positions.push_back(regularPosition);
-        shadowPositions.push_back(shadowPosition);
+        auto pair = calculatePositionOf(i);
+        positions.push_back(pair);
     }
+}
+
+Position TextScreen::calculatePositionOf(const int i) const {
+    int textWidth, textHeight;
+    TTF_SizeText(font, lines[i].c_str(), &textWidth, &textHeight);
+
+    SDL_Point base = basePosition.has_value() ? basePosition.value() : SDL_Point{(screenSize->x - textWidth) / 2,
+                                                                                 static_cast<int>((screenSize->y -
+                                                                                                   textHeight *
+                                                                                                   (lines.size())) /
+                                                                                                  2)};
+
+    SDL_Rect regularPosition = {base.x, base.y + textHeight * i, textWidth, textHeight};
+    SDL_Rect shadowPosition = {base.x + shadowOffset, base.y + textHeight * i + shadowOffset, textWidth,
+                               textHeight};
+    return Position{.shadowPosition=shadowPosition, .regularPosition=regularPosition};
+
 }
 
 TextScreen::~TextScreen() {
     // TTF_CLoseFont & SDL_FreeSurface are null-safe
-
     TTF_CloseFont(font);
     for (auto *surface: surfaces)
         SDL_FreeSurface(surface);
@@ -81,14 +84,14 @@ void TextScreen::draw(SDL_Renderer *const renderer) {
         // Draw shadow
         SDL_Texture *shadowTexture = SDL_CreateTextureFromSurface(renderer, shadowSurfaces[i]);
         if (shadowTexture != nullptr) {
-            SDL_RenderCopy(renderer, shadowTexture, nullptr, &shadowPositions[i]);
+            SDL_RenderCopy(renderer, shadowTexture, nullptr, &positions[i].shadowPosition);
             SDL_DestroyTexture(shadowTexture);
         }
 
         // Draw text
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surfaces[i]);
         if (texture != nullptr) {
-            SDL_RenderCopy(renderer, texture, nullptr, &positions[i]);
+            SDL_RenderCopy(renderer, texture, nullptr, &positions[i].regularPosition);
             SDL_DestroyTexture(texture);
         }
     }
@@ -127,3 +130,24 @@ void TextScreen::update() {
 
     hasUpdated = true;
 }
+
+/**
+ *
+ * @param c to replace with
+ * @param line Should be zero indexed. That means -1 from getAmountOfLines
+ * @param column Should be zero indexed. That means -1 from getAmountOfColumns
+ */
+void TextScreen::replaceLine(const size_t index, std::string line) {
+    lines[index] = std::move(line);
+    hasUpdated = false;
+    positions[index] = calculatePositionOf(index);
+}
+
+std::string &TextScreen::getLine(const size_t index) {
+    return lines[index];
+}
+
+size_t TextScreen::getAmountOfLines() {
+    return lines.size();
+}
+

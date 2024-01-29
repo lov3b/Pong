@@ -1,6 +1,6 @@
 #include "Score.h"
 
-Score::Score(SDL_Point *screenSize, uint8_t max_score) : MAX_SCORE(max_score), leftScore(0), rightScore(0),
+Score::Score(SDL_Point *screenSize, uint8_t max_score) : maxScore_(max_score), leftScore(0), rightScore(0),
                                                          TextScreen("", screenSize, std::make_optional(
                                                                  SDL_Point{screenSize->x / 2 - 50, 10})) {
 }
@@ -34,6 +34,6 @@ void Score::incrementScore(const Side side) {
             break;
     }
 
-    if (incrementedScore >= MAX_SCORE)
+    if (incrementedScore >= maxScore_)
         sideWon_ = side;
 }

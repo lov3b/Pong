@@ -46,6 +46,8 @@ add_executable(Pong src/main.cpp
         src/text/OptionScreen.cpp
         src/text/Score.h
         src/text/Score.cpp
+        src/text/ScrollOptionScreen.cpp
+        src/text/ScrollOptionScreen.h
 )
 
 # Now link the libraries to the target

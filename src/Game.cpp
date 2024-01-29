@@ -6,8 +6,9 @@ Game::Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60),
                                    score(new Score(&this->screenSize, 5)),
                                    ball(new Ball(&this->screenSize, leftPaddle, rightPaddle, score)),
                                    startScreen(
-                                           new OptionScreen("Welcome to Pong!\nPress any key to get started...",
-                                                            &this->screenSize, 4)), endScreen(nullptr),
+                                           new ScrollOptionScreen(
+                                                   "Welcome to Pong!\nUse arrowkeys to adjust max score.\nFinish with enter.",
+                                                   &this->screenSize, 4, score->maxScore())), endScreen(nullptr),
                                    gameState(GameState::START_SCREEN) {
 }
 
@@ -86,9 +87,7 @@ bool Game::handleEvents() {
 
         switch (gameState) {
             case GameState::START_SCREEN:
-                if (event.type == SDL_KEYDOWN && !startScreen->hasStartedCounting())
-                    startScreen->startCountDown();
-
+                startScreen->handleEvent(event);
                 break;
             case GameState::GAME:
                 handleGameEvent(event);

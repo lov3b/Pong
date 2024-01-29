@@ -12,6 +12,7 @@
 #include "text/TextScreen.h"
 #include "text/OptionScreen.h"
 #include "text/Score.h"
+#include "text/ScrollOptionScreen.h"
 
 enum class GameState {
     START_SCREEN, GAME, END_SCREEN
@@ -21,7 +22,8 @@ class Game : public SdlWrapper {
 private:
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
-    OptionScreen *startScreen, *endScreen;
+    OptionScreen *endScreen;
+    ScrollOptionScreen *startScreen;
     Ball *ball;
 
 protected:

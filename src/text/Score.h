@@ -18,7 +18,7 @@
 
 class Score : public TextScreen {
 private:
-    const uint8_t MAX_SCORE;
+    uint8_t maxScore_;
     std::optional<Side> sideWon_;
 
 public:
@@ -36,5 +36,9 @@ public:
     void resetScore();
 
     void incrementScore(const Side side);
+
+    uint8_t &maxScore() {
+        return maxScore_;
+    }
 };
 
