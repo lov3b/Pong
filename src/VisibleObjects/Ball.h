@@ -8,7 +8,8 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <iostream>
 #include "optional"
-#include "Score.h"
+#include "../text/Score.h"
+#include "../text/Score.h"
 
 class Ball {
 private:

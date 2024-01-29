@@ -22,6 +22,7 @@ private:
     int_least64_t nextMsEpoch = 0;
     int stepsToDo, stepsDone = 0;
     bool isDone_ = false;
+
 public:
     [[nodiscard]] const bool &isDone() const {
         return isDone_;
@@ -32,8 +33,9 @@ public:
     }
 
 public:
-    OptionScreen(const std::string &text, SDL_Point *screenSize, int seconds)
-            : TextScreen(text, screenSize), stepsToDo(seconds) {
+    OptionScreen(const std::string &text, SDL_Point *screenSize, int seconds) : TextScreen(text, screenSize,
+                                                                                           std::nullopt),
+                                                                                stepsToDo(seconds) {
     }
 
     void update() override {

@@ -8,28 +8,30 @@
 #include <SDL_ttf.h>
 #include <utility>
 #include <vector>
-#include "defaultfont.h"
+#include "../defaultfont.h"
 #include "iostream"
 
 
 class TextScreen {
 private:
-    std::vector<std::string> lines;
+    std::vector<SDL_Surface *> surfaces;
+    std::vector<SDL_Surface *> shadowSurfaces;
     TTF_Font *font;
     SDL_Point *screenSize;
+    std::optional<SDL_Point> basePosition;
 
     // Regular
     std::vector<SDL_Rect> positions;
     SDL_Color color = {243, 156, 18, 255};
-    std::vector<SDL_Surface *> surfaces;
 
     // Shadow
     std::vector<SDL_Rect> shadowPositions;
     const SDL_Color shadowColor = {243, 156, 18, 100};
-    std::vector<SDL_Surface *> shadowSurfaces;
     const int shadowOffset = 3;
 
+
 protected:
+    std::vector<std::string> lines;
     bool hasUpdated;
 
 public:
@@ -38,7 +40,8 @@ public:
      * @param text This class takes care of freeing text
      * @param screenSize This won't be freed by this class
      */
-    TextScreen(const std::string &text, SDL_Point *screenSize) : hasUpdated(false), screenSize(screenSize) {
+    TextScreen(const std::string &text, SDL_Point *screenSize, std::optional<SDL_Point> basePosition) : hasUpdated(
+            false), screenSize(screenSize), basePosition(basePosition) {
         if (defaultFontPath == nullptr) {
             std::cerr << "Font path is not set for this platform (null)" << std::endl;
             exit(-1);
@@ -69,13 +72,12 @@ private:
             int textWidth, textHeight;
             TTF_SizeText(font, lines[i].c_str(), &textWidth, &textHeight);
 
-            int baseX = (screenSize->x - textWidth) / 2, baseY = (screenSize->y - textHeight * (lines.size())) / 2;
-            SDL_Rect regularPosition = {baseX,
-                                        baseY + textHeight * i,
-                                        textWidth, textHeight};
-            SDL_Rect shadowPosition = {baseX + shadowOffset,
-                                       baseY + textHeight * i + shadowOffset,
-                                       textWidth,
+            SDL_Point base = basePosition.has_value() ? basePosition.value() : SDL_Point{
+                    (screenSize->x - textWidth) / 2,
+                    static_cast<int>((screenSize->y - textHeight * (lines.size())) / 2)};
+
+            SDL_Rect regularPosition = {base.x, base.y + textHeight * i, textWidth, textHeight};
+            SDL_Rect shadowPosition = {base.x + shadowOffset, base.y + textHeight * i + shadowOffset, textWidth,
                                        textHeight};
             positions.push_back(regularPosition);
             shadowPositions.push_back(shadowPosition);

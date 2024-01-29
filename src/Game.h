@@ -8,9 +8,10 @@
 #include "SDL.h"
 #include "VisibleObjects/Ball.h"
 #include "VisibleObjects/PlayerPaddle.h"
-#include "VisibleObjects/Score.h"
-#include "TextScreen.h"
-#include "OptionScreen.h"
+#include "text/Score.h"
+#include "text/TextScreen.h"
+#include "text/OptionScreen.h"
+#include "text/Score.h"
 
 enum class GameState {
     START_SCREEN, GAME, END_SCREEN
@@ -36,7 +37,7 @@ public:
             std::cout << "Player " << player << " won" << std::endl;
             this->running = false;
         };
-        score = new Score(5, &this->screenSize, func);
+        score = new Score(&this->screenSize, 5, func);
         ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
         startScreen = new OptionScreen("Welcome to Pong!\nPress any key to get started...", &this->screenSize, 4);
         endScreen = nullptr;
@@ -67,6 +68,7 @@ public:
                 rightPaddle->draw(renderer);
                 break;
             case GameState::END_SCREEN:
+                endScreen->draw(renderer);
                 break;
         }
 
@@ -87,13 +89,18 @@ public:
                 leftPaddle->update();
                 rightPaddle->update();
                 score->update();
+
+                if (score->sideWon().has_value()) {
+                    const char *player = score->sideWon().value() == Side::LEFT ? "left" : "right";
+                    std::stringstream ss;
+                    ss << "The " << player << " player won with " << std::to_string(score->leftScore) << " - " << std::to_string(score->rightScore)
+                       << "\nWould you like to play again?" << "\nIf so, press any button...";
+                    score->resetScore();
+                    endScreen = new OptionScreen(ss.str(), &screenSize, 4);
+                    gameState = GameState::END_SCREEN;
+                }
                 break;
             case GameState::END_SCREEN:
-                if (endScreen == nullptr) {
-                    std::stringstream ss;
-                    ss << "Player " << " won" << "\nWould you like to play again?" << "\nIf so, press any button...";
-                    endScreen = new OptionScreen(ss.str(), &screenSize, 4);
-                }
                 endScreen->update();
                 if (endScreen->isDone()) {
                     gameState = GameState::GAME;
@@ -115,14 +122,15 @@ public:
                     if (event.type == SDL_KEYDOWN && !startScreen->hasStartedCounting())
                         startScreen->startCountDown();
 
-                    return true;
+                    break;
                 case GameState::GAME:
                     handleGameEvent(event);
-                    return true;
+                    break;
                 case GameState::END_SCREEN:
+                    if (event.type == SDL_KEYDOWN && !endScreen->hasStartedCounting())
+                        endScreen->startCountDown();
                     break;
             }
-
         }
 
         return true;
