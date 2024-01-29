@@ -59,6 +59,13 @@ if (ENABLE_OPTIMIZATIONS)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
+    # Make sure that a terminal window doesn't launch under Windows.
+    # We will still launch the terminal if we haven't compiled with optimizations.
+    # This is useful for debugging
+    if (WIN32)
+        set_target_properties(Pong PROPERTIES WIN32_EXECUTABLE TRUE)
+    endif ()
+
     if (MSVC)
         target_compile_options(Pong PRIVATE /O2)
     else ()
