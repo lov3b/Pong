@@ -22,6 +22,10 @@ SdlWrapper::SdlWrapper(const char *const title, const SDL_Point screenSize, cons
         std::cerr << "Failed to create SDL_Renderer with error: " << SDL_GetError() << std::endl;
         exit(-1);
     }
+    SDL_RendererInfo rendererInfo;
+    if (SDL_GetRendererInfo(renderer, &rendererInfo) == 0) {
+        std::cout << "Using renderer: " << rendererInfo.name << std::endl;
+    }
 
     SDL_RWops *ops = SDL_RWFromConstMem(icon, iconLength);
     if (ops == nullptr) {
