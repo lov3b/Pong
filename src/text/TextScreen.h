@@ -60,6 +60,6 @@ public:
 private:
     void initPositions(const std::string &text);
 
-    Position calculatePositionOf(int i) const;
+    [[nodiscard]] Position calculatePositionOf(int i) const;
 
 };
