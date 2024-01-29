@@ -36,7 +36,7 @@ private:
     const int shadowOffset = 3;
 
 public:
-    explicit Score(uint8_t max_score, SDL_Point *screenSize, const std::function<void(Side)> whenWon) : MAX_SCORE(
+    explicit Score(uint8_t max_score, SDL_Point *screenSize, const std::function<void(Side)> &whenWon) : MAX_SCORE(
             max_score), whenWon(whenWon) {
         resetScore();
         if (defaultFontPath == nullptr) {
@@ -57,17 +57,14 @@ public:
     ~Score() {
         if (font)
             TTF_CloseFont(font);
-        if (surface)
-            SDL_FreeSurface(surface);
+        SDL_FreeSurface(surface);
     }
 
     void update() {
         if (!hasIncremented && surface != nullptr && shadowSurface != nullptr) return;
 
-        if (surface != nullptr)
-            SDL_FreeSurface(surface);
-        if (shadowSurface != nullptr)
-            SDL_FreeSurface(shadowSurface);
+        SDL_FreeSurface(surface);
+        SDL_FreeSurface(shadowSurface);
 
         hasIncremented = false;
         char score_text[8];
@@ -112,7 +109,7 @@ public:
         leftScore = rightScore = 0;
     }
 
-    void incrementScore(Side side) {
+    void incrementScore(const Side side) {
         hasIncremented = true;
         uint8_t temp;
         switch (side) {

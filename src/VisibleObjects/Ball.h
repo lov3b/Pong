@@ -22,14 +22,9 @@ private:
 
 public:
     explicit Ball(const SDL_Point *screen, const PlayerPaddle *leftPaddle, const PlayerPaddle *rightPaddle,
-                  Score *score) {
-        this->score = score;
-        this->screen = screen;
-        this->leftPaddle = leftPaddle;
-        this->rightPaddle = rightPaddle;
-        this->x = screen->x / 2;
-        this->y = screen->y / 2;
-        vec2d = new Vec2d(6);
+                  Score *score) :
+            score(score), screen(screen), leftPaddle(leftPaddle), rightPaddle(rightPaddle), x(screen->x / 2),
+            y(screen->y / 2), vec2d(new Vec2d(6)) {
     }
 
     void resetPosition() {
@@ -66,11 +61,11 @@ public:
     }
 
 private:
-    bool collidedScreenEdgeVertical() {
+    [[nodiscard]]bool collidedScreenEdgeVertical() const {
         return y - RADIUS <= 0 || y + RADIUS >= screen->y;
     }
 
-    std::optional<Side> collidedScreenEdgeHorizontal() {
+    [[nodiscard]] std::optional<Side> collidedScreenEdgeHorizontal() const {
         if (x + RADIUS >= screen->x)
             return Side::RIGHT;
         else if (x - RADIUS <= 0)
@@ -78,7 +73,7 @@ private:
         return std::nullopt;
     }
 
-    std::optional<Side> collidedPaddle() {
+    [[nodiscard]] std::optional<Side> collidedPaddle() const {
         // Right paddle
         if (x + RADIUS >= rightPaddle->x &&
             y >= rightPaddle->y &&

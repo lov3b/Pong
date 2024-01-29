@@ -44,13 +44,13 @@ public:
         SDL_RenderFillRect(renderer, this);
     }
 
-    void startMoving(bool up) {
+    void startMoving(const bool up) {
         if (up)
             movingUp = true;
         else movingDown = true;
     }
 
-    void stopMoving(bool up) {
+    void stopMoving(const bool up) {
         if (up)
             movingUp = false;
         else movingDown = false;
@@ -68,11 +68,11 @@ public:
     }
 
 private:
-    bool canMoveDown() {
+    [[nodiscard]] bool canMoveDown() const {
         return y + h < screen->y;
     }
 
-    bool canMoveUp() {
+    [[nodiscard]] bool canMoveUp() const {
         return y > 0;
     }
 
