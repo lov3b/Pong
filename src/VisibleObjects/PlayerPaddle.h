@@ -12,18 +12,15 @@ class PlayerPaddle : public SDL_Rect {
 private:
     static const int MOVE_PER_TICK = 5;
     const SDL_Point *screen;
-    bool movingUp, movingDown;
+    bool movingUp = false, movingDown = false;
     uint8_t color[4]{};
 
 public:
-    PlayerPaddle(const SDL_Point *screen, const Side side) : SDL_Rect() {
+    PlayerPaddle(const SDL_Point *screen, const Side side) : SDL_Rect() , screen(screen){
         w = 20;
         h = 80;
         x = side == Side::LEFT ? 0 : screen->x - w;
         y = (screen->y - h) / 2;
-        movingUp = false;
-        movingDown = false;
-        this->screen = screen;
 
         color[0] = 255;
         color[1] = 234;

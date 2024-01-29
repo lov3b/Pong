@@ -29,7 +29,6 @@ private:
     const SDL_Color shadowColor = {243, 156, 18, 100};
     const int shadowOffset = 3;
 
-
 protected:
     std::vector<std::string> lines;
     bool hasUpdated;
@@ -46,7 +45,7 @@ public:
             std::cerr << "Font path is not set for this platform (null)" << std::endl;
             exit(-1);
         }
-        this->font = TTF_OpenFont(defaultFontPath, 42);
+        font = TTF_OpenFont(defaultFontPath, 42);
         if (font == nullptr) {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(-1);
@@ -86,8 +85,9 @@ private:
 
 public:
     ~TextScreen() {
-        if (font)
-            TTF_CloseFont(font);
+        // TTF_CLoseFont & SDL_FreeSurface are null-safe
+
+        TTF_CloseFont(font);
         for (auto *surface: surfaces)
             SDL_FreeSurface(surface);
         for (auto *surface: shadowSurfaces)
@@ -116,22 +116,6 @@ public:
     void setText(const std::string &replaceText) {
         lines = splitString(replaceText, '\n');
         initPositions(replaceText);
-    }
-
-    void replaceCharAtIndex(char c, int line, int index) {
-        if (lines.size() <= line) {
-            if (lines[line].length() <= index) {
-                std::cerr << "string lines is of length " << lines.size() << ", but line index is " << index
-                          << std::endl;
-                return;
-            }
-        }
-        if (lines[line].length() <= index) {
-            std::cerr << "text string is of length " << lines[line].length() << ", but index is " << index << std::endl;
-            return;
-        }
-        hasUpdated = false;
-        lines[line][index] = c;
     }
 
     virtual void update() {
@@ -163,7 +147,7 @@ public:
     }
 
 private:
-    static std::vector<std::string> splitString(const std::string &string, const char delim) {
+    static std::vector<std::string> splitString(const std::string &string, const char &delim) {
         int size = 0;
         for (char c: string)
             if (c == delim) size++;

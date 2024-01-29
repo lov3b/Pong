@@ -19,29 +19,24 @@ enum class GameState {
 
 class Game : public SdlWrapper {
 private:
-    Ball *ball;
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
     OptionScreen *startScreen, *endScreen;
+    Ball *ball;
 
 protected:
     GameState gameState;
 
 public:
-    explicit Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60) {
-        leftPaddle = new PlayerPaddle(&this->screenSize, Side::LEFT);
-        rightPaddle = new PlayerPaddle(&this->screenSize, Side::RIGHT);
-
-        auto func = [this](Side side) {
-            const char *player = side == Side::LEFT ? "one" : "two";
-            std::cout << "Player " << player << " won" << std::endl;
-            this->running = false;
-        };
-        score = new Score(&this->screenSize, 5, func);
-        ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
-        startScreen = new OptionScreen("Welcome to Pong!\nPress any key to get started...", &this->screenSize, 4);
-        endScreen = nullptr;
-        gameState = GameState::START_SCREEN;
+    explicit Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60),
+                                          leftPaddle(new PlayerPaddle(&this->screenSize, Side::LEFT)),
+                                          rightPaddle(new PlayerPaddle(&this->screenSize, Side::RIGHT)),
+                                          score(new Score(&this->screenSize, 5)),
+                                          ball(new Ball(&this->screenSize, leftPaddle, rightPaddle, score)),
+                                          startScreen(
+                                                  new OptionScreen("Welcome to Pong!\nPress any key to get started...",
+                                                                   &this->screenSize, 4)), endScreen(nullptr),
+                                          gameState(GameState::START_SCREEN) {
     }
 
     ~Game() override {
@@ -55,7 +50,6 @@ public:
         // Background
         SDL_SetRenderDrawColor(renderer, 128, 0, 128, 0);
         SDL_RenderClear(renderer);
-
 
         switch (gameState) {
             case GameState::START_SCREEN:
@@ -93,8 +87,9 @@ public:
                 if (score->sideWon().has_value()) {
                     const char *player = score->sideWon().value() == Side::LEFT ? "left" : "right";
                     std::stringstream ss;
-                    ss << "The " << player << " player won with " << std::to_string(score->leftScore) << " - " << std::to_string(score->rightScore)
-                       << "\nWould you like to play again?" << "\nIf so, press any button...";
+                    ss << "The " << player << " player won with " << std::to_string(score->leftScore) << " - "
+                       << std::to_string(score->rightScore) << "\nWould you like to play again?"
+                       << "\nIf so, press any button...";
                     score->resetScore();
                     endScreen = new OptionScreen(ss.str(), &screenSize, 4);
                     gameState = GameState::END_SCREEN;

@@ -14,18 +14,17 @@
 class Ball {
 private:
     static const uint8_t RADIUS = 15;
-    const SDL_Point *screen;
+    const SDL_Point *const screen;
     Sint16 x, y;
     Vec2d *vec2d;
     static const uint32_t color = 0xCD5C5CFF;
-    const PlayerPaddle *leftPaddle, *rightPaddle;
-    Score *score;
+    const PlayerPaddle *const leftPaddle, *const rightPaddle;
+    Score *const score;
 
 public:
     explicit Ball(const SDL_Point *screen, const PlayerPaddle *leftPaddle, const PlayerPaddle *rightPaddle,
-                  Score *score) :
-            score(score), screen(screen), leftPaddle(leftPaddle), rightPaddle(rightPaddle), x(screen->x / 2),
-            y(screen->y / 2), vec2d(new Vec2d(6)) {
+                  Score *score) : score(score), screen(screen), leftPaddle(leftPaddle), rightPaddle(rightPaddle),
+                                  x(screen->x / 2), y(screen->y / 2), vec2d(new Vec2d(6)) {
     }
 
     void resetPosition() {
@@ -76,15 +75,11 @@ private:
 
     [[nodiscard]] std::optional<Side> collidedPaddle() const {
         // Right paddle
-        if (x + RADIUS >= rightPaddle->x &&
-            y >= rightPaddle->y &&
-            y <= rightPaddle->y + rightPaddle->h) {
+        if (x + RADIUS >= rightPaddle->x && y >= rightPaddle->y && y <= rightPaddle->y + rightPaddle->h) {
             return Side::RIGHT;
         }
         // Left paddle
-        if (x - RADIUS <= leftPaddle->x + leftPaddle->w &&
-            y >= leftPaddle->y &&
-            y <= leftPaddle->y + leftPaddle->h) {
+        if (x - RADIUS <= leftPaddle->x + leftPaddle->w && y >= leftPaddle->y && y <= leftPaddle->y + leftPaddle->h) {
             return Side::LEFT;
         }
         return std::nullopt;

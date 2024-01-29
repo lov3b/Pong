@@ -18,7 +18,6 @@
 class Score : public TextScreen {
 private:
     const uint8_t MAX_SCORE;
-    const std::function<void(Side)> whenWon;
     std::optional<Side> sideWon_;
 
 public:
@@ -29,9 +28,9 @@ public:
     }
 
 public:
-    explicit Score(SDL_Point *screenSize, uint8_t max_score, const std::function<void(Side)> &whenWon) : MAX_SCORE(
-            max_score), whenWon(whenWon), leftScore(0), rightScore(0), TextScreen("", screenSize, std::make_optional(
-            SDL_Point{screenSize->x / 2 - 50, 10})) {
+    explicit Score(SDL_Point *screenSize, uint8_t max_score) : MAX_SCORE(max_score), leftScore(0), rightScore(0),
+                                                               TextScreen("", screenSize, std::make_optional(
+                                                                       SDL_Point{screenSize->x / 2 - 50, 10})) {
     }
 
     void update() override {
