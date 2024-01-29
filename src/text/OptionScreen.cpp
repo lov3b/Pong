@@ -17,6 +17,12 @@ int_least64_t getCurrentEpochTimeMillis() {
 OptionScreen::OptionScreen(const std::string &text, SDL_Point *screenSize, int seconds) : TextScreen(text, screenSize,
                                                                                                      std::nullopt),
                                                                                           stepsToDo(seconds) {
+    secondaryFont = TTF_OpenFont(getDefaultFontPath(), 100);
+    if (secondaryFont == nullptr) {
+        std::cerr << "Failed to load secondary font: " << TTF_GetError() << std::endl;
+        exit(-1);
+    }
+
 }
 
 void OptionScreen::update() {
@@ -30,6 +36,7 @@ void OptionScreen::update() {
             stepsDone++;
         } else {
             isDone_ = true;
+            std::swap(font, secondaryFont);
         }
     }
 
@@ -41,4 +48,5 @@ void OptionScreen::startCountDown() {
     nextMsEpoch = epochMs;
     hasStartedCounting_ = true;
     stepsDone = 0;
+    std::swap(font, secondaryFont);
 }

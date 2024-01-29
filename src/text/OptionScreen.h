@@ -13,6 +13,7 @@ private:
     int stepsToDo, stepsDone = 0;
     bool isDone_ = false;
 
+    TTF_Font *secondaryFont;
 public:
     [[nodiscard]] const bool &isDone() const {
         return isDone_;

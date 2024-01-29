@@ -19,7 +19,6 @@ class TextScreen {
 private:
     std::vector<SDL_Surface *> surfaces;
     std::vector<SDL_Surface *> shadowSurfaces;
-    TTF_Font *font;
     SDL_Point *screenSize;
     std::optional<SDL_Point> basePosition;
 
@@ -32,6 +31,7 @@ private:
     const int shadowOffset = 3;
 
 protected:
+    TTF_Font *font;
     std::vector<std::string> lines;
     bool hasUpdated;
 
