@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-#if defined(__linux__)
+#ifdef __linux__
 #include <filesystem>
 
 const char *getLinuxFilePath() {
@@ -21,7 +21,7 @@ const char *getLinuxFilePath() {
 const char *getDefaultFontPath() {
 #if defined(_WIN32) || defined(_WIN64)
     return R"(C:\Windows\Fonts\Arial.ttf)";
-#elif defined(__linux__)
+#elifdef __linux__
     return getLinuxFilePath();
 #elif defined(__APPLE__) || defined(__MACH__)
     return "/System/Library/Fonts/Supplemental/Arial.ttf";
