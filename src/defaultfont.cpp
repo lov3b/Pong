@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
-#if defined(__LINUX__)
+#if defined(__linux__)
 #include <filesystem>
 
 const char *getLinuxFilePath() {
