@@ -34,6 +34,6 @@ void Score::incrementScore(const Side side) {
             break;
     }
 
-    if (incrementedScore > MAX_SCORE)
+    if (incrementedScore >= MAX_SCORE)
         sideWon_ = side;
 }
