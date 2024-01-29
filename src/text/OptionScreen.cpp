@@ -36,7 +36,7 @@ void OptionScreen::update() {
 
 void OptionScreen::startCountDown() {
     auto epochMs = getCurrentEpochTimeMillis();
-    nextMsEpoch = epochMs + 1000;
+    nextMsEpoch = epochMs;
     hasStartedCounting_ = true;
     stepsDone = 0;
 }
