@@ -10,6 +10,7 @@
 #include "VisibleObjects/PlayerPaddle.h"
 #include "VisibleObjects/Score.h"
 #include "TextScreen.h"
+#include "StartScreen.h"
 
 enum class GameState {
     START_SCREEN, GAME, END_SCREEN
@@ -20,7 +21,8 @@ private:
     Ball *ball;
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
-    TextScreen *startScreen, *endScreen;
+    StartScreen *startScreen;
+    TextScreen *endScreen;
 
 protected:
     GameState gameState;
@@ -37,7 +39,7 @@ public:
         };
         score = new Score(5, &this->screenSize, func);
         ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
-        startScreen = new TextScreen("Welcome to Pong!\nPress any key to get started...", &this->screenSize);
+        startScreen = new StartScreen(&this->screenSize, 4);
         endScreen = new TextScreen("", &this->screenSize);
         gameState = GameState::START_SCREEN;
     }
@@ -76,6 +78,8 @@ public:
         switch (gameState) {
             case GameState::START_SCREEN:
                 startScreen->update();
+                if (startScreen->isDone())
+                    gameState = GameState::GAME;
                 break;
             case GameState::GAME:
                 ball->update();
@@ -97,8 +101,9 @@ public:
 
             switch (gameState) {
                 case GameState::START_SCREEN:
-                    if (event.type == SDL_KEYDOWN)
-                        gameState = GameState::GAME;
+                    if (event.type == SDL_KEYDOWN && !startScreen->hasStartedCounting())
+                        startScreen->startCountDown();
+
                     return true;
                 case GameState::GAME:
                     handleGameEvent(event);

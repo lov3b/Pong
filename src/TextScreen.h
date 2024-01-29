@@ -16,7 +16,7 @@ class TextScreen {
 private:
     std::vector<std::string> lines;
     TTF_Font *font;
-    bool hasUpdated;
+    SDL_Point *screenSize;
 
     // Regular
     std::vector<SDL_Rect> positions;
@@ -29,13 +29,16 @@ private:
     std::vector<SDL_Surface *> shadowSurfaces;
     const int shadowOffset = 3;
 
+protected:
+    bool hasUpdated;
+
 public:
     /**
      *
      * @param text This class takes care of freeing text
      * @param screenSize This won't be freed by this class
      */
-    TextScreen(const std::string& text, SDL_Point *screenSize) : hasUpdated(false) {
+    TextScreen(const std::string &text, SDL_Point *screenSize) : hasUpdated(false), screenSize(screenSize) {
         if (defaultFontPath == nullptr) {
             std::cerr << "Font path is not set for this platform (null)" << std::endl;
             exit(-1);
@@ -46,7 +49,17 @@ public:
             exit(-1);
         }
 
+        initPositions(text);
+    }
+
+private:
+    void initPositions(const std::string &text) {
         lines = splitString(text, '\n');
+        surfaces.clear();
+        shadowSurfaces.clear();
+        positions.clear();
+        shadowPositions.clear();
+
         surfaces.reserve(lines.size());
         shadowSurfaces.reserve(lines.size());
         positions.reserve(lines.size());
@@ -67,9 +80,9 @@ public:
             positions.push_back(regularPosition);
             shadowPositions.push_back(shadowPosition);
         }
-
     }
 
+public:
     ~TextScreen() {
         if (font)
             TTF_CloseFont(font);
@@ -80,7 +93,7 @@ public:
     }
 
 
-    void draw(SDL_Renderer *renderer) {
+    virtual void draw(SDL_Renderer *renderer) {
         for (int i = 0; i < surfaces.size(); ++i) {
             // Draw shadow
             SDL_Texture *shadowTexture = SDL_CreateTextureFromSurface(renderer, shadowSurfaces[i]);
@@ -98,8 +111,9 @@ public:
         }
     }
 
-    void setText(std::string &replaceText) {
+    void setText(const std::string &replaceText) {
         lines = splitString(replaceText, '\n');
+        initPositions(replaceText);
     }
 
     void replaceCharAtIndex(char c, int line, int index) {
@@ -118,7 +132,7 @@ public:
         lines[line][index] = c;
     }
 
-    void update() {
+    virtual void update() {
         if (hasUpdated)
             return;
 

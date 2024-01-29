@@ -11,7 +11,7 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 # SDL2 Gfx
-find_library(SDL2_GFX_LIBRARY NAMES SDL2_gfx SDL2_gfxd)
+find_library(SDL2_GFX_LIBRARY NAMES SDL2_gfx SDL2_gfxd libSDL2_gfx)
 if (NOT SDL2_GFX_LIBRARY)
     message(FATAL_ERROR "SDL2_gfx not found")
 endif ()
@@ -34,7 +34,8 @@ add_executable(Pong src/main.cpp
         src/VisibleObjects/Side.h
         src/VisibleObjects/Score.h
         src/TextScreen.h
-        src/defaultfont.h)
+        src/defaultfont.h
+        src/StartScreen.h)
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})
