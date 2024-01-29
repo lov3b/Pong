@@ -2,9 +2,8 @@
 
 #include "SdlWrapper.h"
 
-SdlWrapper::SdlWrapper(const char *const title, const SDL_Point screenSize, const uint8_t fps) : fps(fps),
-                                                                                                 screenSize(
-                                                                                                         screenSize) {
+SdlWrapper::SdlWrapper(const char *const title, const SDL_Point screenSize, const uint8_t fps) : fps(fps), screenSize(
+        screenSize) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
         exit(-1);
@@ -13,13 +12,12 @@ SdlWrapper::SdlWrapper(const char *const title, const SDL_Point screenSize, cons
         std::cerr << "Failed to initialize TTF: " << TTF_GetError() << std::endl;
         exit(-1);
     }
-    window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenSize.x, screenSize.y,
-                              0);
+    window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenSize.x, screenSize.y, 0);
     if (window == nullptr) {
         std::cerr << "Failed to create SDL_Window with error: " << SDL_GetError() << std::endl;
         exit(-1);
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr) {
         std::cerr << "Failed to create SDL_Renderer with error: " << SDL_GetError() << std::endl;
         exit(-1);
