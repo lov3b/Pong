@@ -14,6 +14,7 @@
 #include <string>
 #include <iostream>
 #include <optional>
+#include <sstream>
 
 class Score : public TextScreen {
 private:
@@ -28,43 +29,12 @@ public:
     }
 
 public:
-    explicit Score(SDL_Point *screenSize, uint8_t max_score) : MAX_SCORE(max_score), leftScore(0), rightScore(0),
-                                                               TextScreen("", screenSize, std::make_optional(
-                                                                       SDL_Point{screenSize->x / 2 - 50, 10})) {
-    }
+    explicit Score(SDL_Point *screenSize, uint8_t max_score);
 
-    void update() override {
-        if (hasUpdated) return;
+    void update() override;
 
-        std::stringstream ss;
-        ss << std::to_string(leftScore) << " - " << std::to_string(rightScore);
-        setText(ss.str());
-        TextScreen::update();
+    void resetScore();
 
-        hasUpdated = true;
-    }
-
-    void resetScore() {
-        leftScore = rightScore = 0;
-        sideWon_ = std::nullopt;
-        hasUpdated = false;
-    }
-
-    void incrementScore(const Side side) {
-        hasUpdated = false;
-        uint8_t incrementedScore;
-        switch (side) {
-            case Side::LEFT:
-                incrementedScore = ++leftScore;
-                break;
-            case Side::RIGHT:
-                incrementedScore = ++rightScore;
-                break;
-        }
-
-        if (incrementedScore > MAX_SCORE)
-            sideWon_ = side;
-    }
-
+    void incrementScore(const Side side);
 };
 

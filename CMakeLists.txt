@@ -22,33 +22,41 @@ if (NOT SDL2_TTF_LIBRARY)
 endif ()
 
 
-
 # Define the executable target before linking libraries
 add_executable(Pong src/main.cpp
         src/SdlWrapper.h
+        src/SdlWrapper.cpp
         src/Game.h
+        src/Game.cpp
         src/VisibleObjects/Ball.h
+        src/VisibleObjects/Ball.cpp
         src/Vec2d/Vec2d.h
+        src/Vec2d/Vec2d.cpp
         src/Vec2d/Bump.h
         src/VisibleObjects/PlayerPaddle.h
+        src/VisibleObjects/PlayerPaddle.cpp
         src/VisibleObjects/Side.h
         src/text/TextScreen.h
+        src/text/TextScreen.cpp
         src/defaultfont.h
+        src/defaultfont.cpp
         src/icon.h
         src/icon.cpp
         src/text/OptionScreen.h
+        src/text/OptionScreen.cpp
         src/text/Score.h
+        src/text/Score.cpp
 )
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})
 
 # Set compiler optimization flags
-if(ENABLE_OPTIMIZATIONS)
+if (ENABLE_OPTIMIZATIONS)
     message(STATUS "Optimizations are enabled")
-    if(MSVC)
+    if (MSVC)
         target_compile_options(Pong PRIVATE /O2)
-    else()
+    else ()
         target_compile_options(Pong PRIVATE -O3)
-    endif()
-endif()
+    endif ()
+endif ()
