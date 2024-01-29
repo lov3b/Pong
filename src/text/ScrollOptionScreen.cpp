@@ -28,7 +28,7 @@ void ScrollOptionScreen::handleEvent(SDL_Event &event) {
             case SDLK_s:
                 [[fallthrough]];
             case SDLK_DOWN:
-                if (counter > 0) {
+                if (counter > 1) {
                     counter--;
                     shouldUpdate = true;
                 }
