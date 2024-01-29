@@ -1,6 +1,5 @@
-//
-// Created by love on 2024-01-18.
-//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #pragma once
 
 #include "../Vec2d/Vec2d.h"

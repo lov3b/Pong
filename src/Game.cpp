@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include "Game.h"
 
 Game::Game(SDL_Point screenSize) : SdlWrapper("Pong", screenSize, 60),

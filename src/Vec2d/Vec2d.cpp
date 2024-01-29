@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include "Vec2d.h"
 
 Vec2d::Vec2d(float_t hypotenuse) : hypotenuse(hypotenuse) {

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include "Score.h"
 
 Score::Score(SDL_Point *screenSize, uint8_t max_score) : maxScore_(max_score), leftScore(0), rightScore(0),

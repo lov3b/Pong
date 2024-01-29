@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-2-Clause
+
 #include <string>
 #include <sstream>
 #include <utility>
