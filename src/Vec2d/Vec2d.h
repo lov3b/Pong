@@ -30,10 +30,11 @@ public:
         std::uniform_int_distribution<uint8_t> ints(0, 1);
         int sign = ints(mtRand) ? -1 : 1;
 
-        std::uniform_real_distribution<float_t> angleGen(3, 60);
-        double_t angle = toRadians(angleGen(mtRand));
-        x = cos(angle) * sign * hypotenuse;
-        y = sin(angle) * sign * hypotenuse;
+        std::uniform_real_distribution<float_t> angleGen(15, 75);
+        double_t degrees = angleGen(mtRand);
+        double_t angle = toRadians(degrees);
+        x = sin(angle) * sign * hypotenuse;
+        y = cos(angle) * sign * hypotenuse;
 
         smallAngleGen = std::uniform_real_distribution<double_t>(15, 20);
     }
