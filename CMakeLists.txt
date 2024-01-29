@@ -54,6 +54,11 @@ target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBR
 # Set compiler optimization flags
 if (ENABLE_OPTIMIZATIONS)
     message(STATUS "Optimizations are enabled")
+    set_target_properties(Pong PROPERTIES LINK_SEARCH_START_STATIC 1)
+    set_target_properties(Pong PROPERTIES LINK_SEARCH_END_STATIC 1)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
     if (MSVC)
         target_compile_options(Pong PRIVATE /O2)
     else ()
