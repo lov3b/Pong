@@ -35,7 +35,7 @@ add_executable(Pong src/main.cpp
         src/VisibleObjects/Score.h
         src/TextScreen.h
         src/defaultfont.h
-        src/StartScreen.h)
+        src/OptionScreen.h)
 
 # Now link the libraries to the target
 target_link_libraries(Pong ${SDL2_LIBRARIES} ${SDL2_GFX_LIBRARY} ${SDL2_TTF_LIBRARY})

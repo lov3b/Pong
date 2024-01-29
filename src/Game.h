@@ -10,7 +10,7 @@
 #include "VisibleObjects/PlayerPaddle.h"
 #include "VisibleObjects/Score.h"
 #include "TextScreen.h"
-#include "StartScreen.h"
+#include "OptionScreen.h"
 
 enum class GameState {
     START_SCREEN, GAME, END_SCREEN
@@ -21,8 +21,7 @@ private:
     Ball *ball;
     Score *score;
     PlayerPaddle *leftPaddle, *rightPaddle;
-    StartScreen *startScreen;
-    TextScreen *endScreen;
+    OptionScreen *startScreen, *endScreen;
 
 protected:
     GameState gameState;
@@ -39,8 +38,8 @@ public:
         };
         score = new Score(5, &this->screenSize, func);
         ball = new Ball(&this->screenSize, leftPaddle, rightPaddle, score);
-        startScreen = new StartScreen(&this->screenSize, 4);
-        endScreen = new TextScreen("", &this->screenSize);
+        startScreen = new OptionScreen("Welcome to Pong!\nPress any key to get started...", &this->screenSize, 4);
+        endScreen = nullptr;
         gameState = GameState::START_SCREEN;
     }
 
@@ -78,8 +77,10 @@ public:
         switch (gameState) {
             case GameState::START_SCREEN:
                 startScreen->update();
-                if (startScreen->isDone())
+                if (startScreen->isDone()) {
                     gameState = GameState::GAME;
+                    delete startScreen; // We will never get back to this state
+                }
                 break;
             case GameState::GAME:
                 ball->update();
@@ -88,6 +89,16 @@ public:
                 score->update();
                 break;
             case GameState::END_SCREEN:
+                if (endScreen == nullptr) {
+                    std::stringstream ss;
+                    ss << "Player " << " won" << "\nWould you like to play again?" << "\nIf so, press any button...";
+                    endScreen = new OptionScreen(ss.str(), &screenSize, 4);
+                }
+                endScreen->update();
+                if (endScreen->isDone()) {
+                    gameState = GameState::GAME;
+                    delete endScreen; // The text will not be the same if we get back here. We might as well free it.
+                }
                 break;
         }
     }

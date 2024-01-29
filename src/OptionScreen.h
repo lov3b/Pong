@@ -16,7 +16,7 @@ int_least64_t getCurrentEpochTimeMillis() {
 }
 
 
-class StartScreen : public TextScreen {
+class OptionScreen : public TextScreen {
 private:
     bool hasStartedCounting_ = false;
     int_least64_t nextMsEpoch = 0;
@@ -32,8 +32,8 @@ public:
     }
 
 public:
-    StartScreen(SDL_Point *screenSize, int seconds)
-            : TextScreen("Welcome to Pong!\nPress any key to get started...", screenSize), stepsToDo(seconds) {
+    OptionScreen(const std::string &text, SDL_Point *screenSize, int seconds)
+            : TextScreen(text, screenSize), stepsToDo(seconds) {
     }
 
     void update() override {
