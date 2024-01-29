@@ -41,6 +41,7 @@ public:
      */
     TextScreen(const std::string &text, SDL_Point *screenSize, std::optional<SDL_Point> basePosition) : hasUpdated(
             false), screenSize(screenSize), basePosition(basePosition) {
+        const char *defaultFontPath = getDefaultFontPath();
         if (defaultFontPath == nullptr) {
             std::cerr << "Font path is not set for this platform (null)" << std::endl;
             exit(-1);

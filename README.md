@@ -11,9 +11,8 @@ the following command.
 apt install cmake build-essential libsdl2-dev libsdl2-gfx-dev libsdl2-ttf-dev
 ```
 
-DejaVuSans is also expected to be in the same place as it is under compile time. You will need to make sure to compile
-for the same distro that you're using, and also have the font installed. The package under debian is
-called  `fonts-dejavu-core`
+DejaVuSans is also expected to be present at the default location under linux whilst Arial is under Windows and macOS. 
+The package under debian is called  `fonts-dejavu-core`
 
 ## Compiling
 
