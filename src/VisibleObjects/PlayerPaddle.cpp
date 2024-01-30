@@ -6,7 +6,7 @@
 PlayerPaddle::PlayerPaddle(const SDL_Point *screen, const Side side) : SDL_Rect(), screen(screen) {
     w = 20;
     h = 80;
-    x = side == Side::LEFT ? 0 : screen->x - w;
+    x = side == Side::LEFT ? 20 : screen->x - w-20;
     y = (screen->y - h) / 2;
 
     color[0] = 255;

@@ -9,7 +9,7 @@
 
 class PlayerPaddle : public SDL_Rect {
 private:
-    static const int MOVE_PER_TICK = 5;
+    static const int MOVE_PER_TICK = 7;
     const SDL_Point *screen;
     bool movingUp = false, movingDown = false;
     uint8_t color[4]{};
