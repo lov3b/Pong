@@ -47,6 +47,11 @@ void Game::draw(SDL_Renderer *const renderer) {
 void Game::update() {
     switch (gameState) {
         case GameState::START_SCREEN:
+            // This should not happen, but it's better than a segfault.
+            if (startScreen == nullptr) {
+                std::cerr << "startScreen was not initialized (null)." << std::endl;
+                exit(-1);
+            }
             startScreen->update();
             if (startScreen->isDone()) {
                 gameState = GameState::GAME;
@@ -71,6 +76,11 @@ void Game::update() {
             }
             break;
         case GameState::END_SCREEN:
+            // This should not happen, but it's better than a segfault.
+            if (endScreen == nullptr) {
+                std::cerr << "endScreen was not initialized (null)." << std::endl;
+                exit(-1);
+            }
             endScreen->update();
             if (endScreen->isDone()) {
                 gameState = GameState::GAME;
