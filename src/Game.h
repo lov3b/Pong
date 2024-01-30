@@ -36,7 +36,7 @@ public:
 
     void update() override;
 
-    bool handleEvents() override;
+    void handleKeyUp(SDL_Event &event) override;
 
-    void handleGameEvent(SDL_Event &event);
+    void handleKeyDown(SDL_Event &event) override;
 };

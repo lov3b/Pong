@@ -80,64 +80,53 @@ void Game::update() {
     }
 }
 
-bool Game::handleEvents() {
-    SDL_Event event;
 
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT)
-            return false;
-
-        switch (gameState) {
-            case GameState::START_SCREEN:
-                startScreen->handleEvent(event);
-                break;
-            case GameState::GAME:
-                handleGameEvent(event);
-                break;
-            case GameState::END_SCREEN:
-                if (event.type == SDL_KEYDOWN && !endScreen->hasStartedCounting())
-                    endScreen->startCountDown();
-                break;
-        }
+void Game::handleKeyDown(SDL_Event &event) {
+    if (gameState == GameState::START_SCREEN) {
+        startScreen->handleEvent(event);
+        return;
+    } else if (gameState == GameState::END_SCREEN) {
+        if (event.type == SDL_KEYDOWN && !endScreen->hasStartedCounting())
+            endScreen->startCountDown();
+        return;
     }
 
-    return true;
+    switch (event.key.keysym.sym) {
+        case SDLK_w:
+            leftPaddle->startMoving(true);
+            break;
+        case SDLK_s:
+            leftPaddle->startMoving(false);
+            break;
+
+        case SDLK_UP:
+            rightPaddle->startMoving(true);
+            break;
+        case SDLK_DOWN:
+            rightPaddle->startMoving(false);
+            break;
+    }
+
 }
 
-void Game::handleGameEvent(SDL_Event &event) {
-    if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-            case SDLK_w:
-                leftPaddle->startMoving(true);
-                break;
-            case SDLK_s:
-                leftPaddle->startMoving(false);
-                break;
+void Game::handleKeyUp(SDL_Event &event) {
+    if (gameState != GameState::GAME)
+        return;
 
-            case SDLK_UP:
-                rightPaddle->startMoving(true);
-                break;
-            case SDLK_DOWN:
-                rightPaddle->startMoving(false);
-                break;
-        }
-    } else if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-            case SDLK_w:
-                leftPaddle->stopMoving(true);
-                break;
-            case SDLK_s:
-                leftPaddle->stopMoving(false);
-                break;
+    switch (event.key.keysym.sym) {
+        case SDLK_w:
+            leftPaddle->stopMoving(true);
+            break;
+        case SDLK_s:
+            leftPaddle->stopMoving(false);
+            break;
 
-            case SDLK_UP:
-                rightPaddle->stopMoving(true);
-                break;
-            case SDLK_DOWN:
-                rightPaddle->stopMoving(false);
-                break;
-
-        }
+        case SDLK_UP:
+            rightPaddle->stopMoving(true);
+            break;
+        case SDLK_DOWN:
+            rightPaddle->stopMoving(false);
+            break;
 
     }
 }

@@ -30,5 +30,11 @@ protected:
 
     virtual void update() = 0;
 
-    virtual bool handleEvents() = 0;
+    virtual void handleKeyUp(SDL_Event &event) = 0;
+
+    virtual void handleKeyDown(SDL_Event &event) = 0;
+
+
+private:
+    bool handleEvents();
 };
